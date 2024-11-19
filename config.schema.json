@@ -1,0 +1,44 @@
+{
+  "pluginAlias": "FlipperZeroPlatform",
+  "pluginType": "platform",
+  "singular": true,
+  "schema": {
+    "type": "object",
+    "properties": {
+      "name": {
+        "title": "Name",
+        "type": "string",
+        "required": true
+      },
+      "devices": {
+        "title": "Devices",
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "uniqueId": {
+              "title": "Unique ID",
+              "type": "string",
+              "required": true
+            },
+            "displayName": {
+              "title": "Display Name",
+              "type": "string",
+              "required": true
+            },
+            "onCommand": {
+              "title": "On Command",
+              "type": "string",
+              "required": true
+            },
+            "offCommand": {
+              "title": "Off Command",
+              "type": "string",
+              "required": true
+            }
+          }
+        }
+      }
+    }
+  }
+}

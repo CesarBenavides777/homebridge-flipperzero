@@ -3,7 +3,7 @@
   "displayName": "Homebridge Flipper Zero",
   "type": "module",
   "version": "alpha",
-  "private": true,
+  "private": false,
   "description": "Homebridge plugin for Flipper Zero - Exposes Flipper Zero as a HomeKit accessory",
   "author": "CesarBenavides777",
   "license": "Apache-2.0",

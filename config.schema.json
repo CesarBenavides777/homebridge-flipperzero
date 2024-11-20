@@ -6,9 +6,21 @@
     "type": "object",
     "properties": {
       "name": {
-        "title": "Name",
+        "title": "Platform Name",
         "type": "string",
         "required": true
+      },
+      "connection": {
+        "title": "Connection Type",
+        "type": "string",
+        "enum": ["usb", "tcp", "ws"],
+        "required": true,
+        "default": "usb"
+      },
+      "address": {
+        "title": "Connection Address",
+        "type": "string",
+        "description": "Address for TCP or WebSocket connection. Leave empty for USB."
       },
       "devices": {
         "title": "Devices",
@@ -26,19 +38,33 @@
               "type": "string",
               "required": true
             },
-            "onCommand": {
-              "title": "On Command",
+            "signalType": {
+              "title": "Signal Type",
+              "type": "string",
+              "enum": ["ir", "subghz"],
+              "required": true
+            },
+            "onCommandFile": {
+              "title": "On Command File Path",
               "type": "string",
               "required": true
             },
-            "offCommand": {
-              "title": "Off Command",
+            "offCommandFile": {
+              "title": "Off Command File Path",
               "type": "string",
               "required": true
             }
-          }
+          },
+          "required": [
+            "uniqueId",
+            "displayName",
+            "signalType",
+            "onCommandFile",
+            "offCommandFile"
+          ]
         }
       }
-    }
+    },
+    "required": ["name", "connection", "devices"]
   }
 }

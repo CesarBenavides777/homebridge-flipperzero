@@ -1,5 +1,5 @@
 {
-  "name": "CesarBenavides777/homebridge-flipperzero",
+  "name": "homebridge-flipperzero",
   "displayName": "Homebridge Flipper Zero",
   "type": "module",
   "version": "beta",

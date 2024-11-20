@@ -1,6 +1,11 @@
 import argparse
 from pyflipper.pyflipper import PyFlipper
 import serial.tools.list_ports as list_ports
+import sys
+from datetime import datetime
+
+with open('/tmp/python_script_log.txt', 'a') as log:
+    log.write(f"{datetime.now()} - Script started with args: {sys.argv}\n")
 
 
 def get_flipper_com_port():
@@ -80,14 +85,54 @@ def send_ir_signal(flipper, remote_file_path):
     except Exception as e:
         print(f"Failed to transmit IR signal: {e}")
 
+def send_ir_signal_by_section(flipper, remote_file_path, section_name):
+    """Transmit an IR signal for a specific section in the IR file."""
+    if not verify_file_exists(flipper, remote_file_path):
+        print(f"Cannot transmit. File not found: {remote_file_path}")
+        return
+
+    try:
+        # Read the file content
+        content = flipper.storage.read(file=remote_file_path)
+        sections = content.split('#')  # Split into sections
+        
+        # Collect available sections for debugging
+        available_sections = []
+        
+        for section in sections:
+            lines = section.splitlines()
+            name_line = next((line for line in lines if line.startswith('name:')), None)
+            
+            if name_line:
+                # Extract and clean the section name
+                current_section_name = name_line.split(":")[1].strip()
+                available_sections.append(current_section_name)
+
+                # Match the requested section name (case-insensitive)
+                if current_section_name.lower() == section_name.lower():
+                    # Parse and transmit the `data` line
+                    for line in lines:
+                        if line.startswith('data:'):
+                            data = list(map(int, line.split()[1:]))
+                            flipper.ir.tx_raw(frequency=38000, duty_cycle=0.33, samples=data)
+                            print(f"Transmitted IR signal for '{section_name}' from {remote_file_path}")
+                            return
+        # Log available sections if no match is found
+        print(f"Section '{section_name}' not found in {remote_file_path}.")
+        print(f"Available sections: {', '.join(available_sections)}")
+    except Exception as e:
+        print(f"Failed to transmit IR signal: {e}")
+
+
 
 
 def main():
     parser = argparse.ArgumentParser(description="Control Flipper Zero via pyFlipper.")
     parser.add_argument('--send', type=str, required=True, help="Command to send (e.g., 'fan-high', 'light-toggle').")
-    parser.add_argument('--type', type=str, choices=['subghz', 'ir'], required=True, help="Type of signal ('subghz' or 'ir').")
+    parser.add_argument('--type', type=str, choices=['subghz', 'ir', 'ir-on', 'ir-rotate', 'ir-speed'], required=True, help="Type of signal ('subghz' or 'ir' or 'ir-on' or 'ir-rotate' or 'ir-speed').")
     parser.add_argument('--file', type=str, required=True, help="Path to the signal file.")
     args = parser.parse_args()
+    print(f"Sending command '{args.send}' with signal type '{args.type}' from file '{args.file}'.")
 
     try:
         # Detect the Flipper Zero device
@@ -110,6 +155,12 @@ def main():
             send_subghz_signal(flipper, args.file)
         elif args.type == 'ir':
             send_ir_signal(flipper, args.file)
+        elif args.type == 'ir-on':
+            send_ir_signal_by_section(flipper, args.file, "On_off")
+        elif args.type == 'ir-rotate':
+            send_ir_signal_by_section(flipper, args.file, "rotate")
+        elif args.type == 'ir-speed':
+            send_ir_signal_by_section(flipper, args.file, "Speed")
         else:
             print(f"Unsupported signal type: {args.type}")
     except ImportError as e:

@@ -1,8 +1,8 @@
 {
-  "name": "homebridge-flipperzero",
+  "name": "homebridge-flipperzero-cb",
   "displayName": "Homebridge Flipper Zero",
   "type": "module",
-  "version": "beta",
+  "version": "1.0.0",
   "private": false,
   "description": "Homebridge plugin for Flipper Zero - Exposes Flipper Zero as a HomeKit accessory",
   "author": "CesarBenavides777",
